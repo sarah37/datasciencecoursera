@@ -1,0 +1,85 @@
+---
+title: "Prediction Assignment"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+## Introduction
+In this assignment, data from accelerometers will be used to classify barbell lifts - they were either executed correctly, or incorrectly in five different ways.
+
+## Preprocessing
+
+First, we load the required libraries.
+
+```{r}
+library(caret)
+library(randomForest)
+```
+
+Then, we load the data from the csv file. There are some NA values that are not represented by "NA", but rather by an error message, which we include in the na.strings argument.
+
+```{r}
+tdata <- read.csv("pml-training.csv", na.strings = c("NA","#DIV/0!",""))
+```
+
+We split the provided training set into a training and a test set so that we can estimate the out of sample accuracy later on (cross validation).
+
+```{r}
+set.seed(123)
+inTrain <- sample(1:dim(tdata)[1], size=dim(tdata)[1]/2, replace = FALSE)
+training <- tdata[inTrain, ]
+testing <- tdata[-inTrain, ]
+```
+
+We also exclude the first six columns because they contain data that is irrelevant for the prediction: time stamps, subject names etc. We also exclude columns that contain more than 50% NA values as well as columns with near zero variance.
+
+```{r}
+# exclude first six columns (irrelevant for prediction)
+training <- training[, -c(1:6)]
+
+# exclude all columns with more than 50% NAs
+na_perc <- apply(training, 2, function(x) {sum(is.na(x))/length(x)})
+training <- training[, na_perc < .5]
+
+# exclude all columns with near zero variance
+nzv <- nearZeroVar(training, saveMetrics = T)
+training <- training[, !nzv$nzv]
+```
+
+## Prediction Models
+
+We want to categorise the data into five categories, based on continuous numerical variables. A decision tree is a good method to use for this kind of classification. We therefore begin by building a simple decision tree and calculating its accuracy in the test set.
+
+```{r}
+m0 <- train(classe ~ ., data=training, method="rpart")
+p0 <- predict(m0, testing)
+a0 <- sum(p0 == testing$classe)/length(p0)
+```
+
+Testing the decision tree on the test set yields an accuracy of `r a0`, which we can take as an estimate of the out of sample accuracy. While this is significantly higher than the 20% accuracy we would obtain by simply guessing, it is not a satisfactory result yet.
+
+Therefore, we will combine multiple decision trees using a random forest in hope of increasing the overall accuracy. We limit the number of trees to 100 to reduce training time. As we will see, this still leads to a very good result.
+
+```{r}
+m1 <- randomForest(classe ~ ., data = training, ntree = 100)
+p1 <- predict(m1, testing)
+a1 <- sum(p1 == testing$classe)/length(p1)
+```
+
+We obtain an accuracy of `r a1` on the test set, which is a very good result.
+
+## Predicting classes on the test set
+Lastly, the decision tree is used to predict the classes of the provided test set (I do not show the results here.)
+```{r}
+# answer questions
+ft <- read.csv("pml-testing.csv", na.strings = c("NA","#DIV/0!",""))
+ft <- ft[, -c(1:6)]
+ft <- ft[, na_perc < .5]
+ft <- ft[, !nzv$nzv]
+
+pf <- predict(m1, ft)
+```
