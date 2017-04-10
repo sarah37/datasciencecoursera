@@ -10,18 +10,21 @@ knitr::opts_chunk$set(echo = FALSE, message = F, warning = F)
 ```
 
 ## Introduction
-On the next slide, a simple plot of the number (in thousands) of Australian residents measured quarterly from March 1971 to March 1994 is shown. The data is taken from the austres dataset in the datasets package.
+In this presentation, a simple plot of the number (in thousands) of Australian residents measured quarterly from March 1971 to March 1994 is shown. The data is taken from the austres dataset in the datasets package.
 
 ## Code
 ```{r echo=T}
 library(plotly)
 library(datasets)
 data(austres)
+austres <- austres * 1000
 
 p <- plot_ly(x = time(austres), 
              y = austres, 
              type = "scatter", 
-             mode="lines")
+             mode="lines") %>%
+        layout(xaxis = list(title = "Year"),
+               yaxis = list(title = "Australian Residents"))
 ```
 
 ## Plot
