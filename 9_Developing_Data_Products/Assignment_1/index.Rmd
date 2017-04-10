@@ -2,10 +2,11 @@
 title: "Data Science Courses in the US"
 output: html_document
 author: "Sarah Schöttler"
+date: "10 April 2017"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width = 9.5)
 ```
 
 This page shows a map of all Data Science courses at universities in the US. It is based on [a dataset from Kaggle](https://www.kaggle.com/sriharirao/datascience-universities-across-us). The code to make the map using leaflet is shown below.
@@ -19,7 +20,7 @@ dsu <- read.csv("DSuniversities.csv", stringsAsFactors = FALSE)
 dsu$label <- paste0(dsu$SCHOOL, " (", dsu$PROGRAM, ")")
 
 my_map <- leaflet() %>%
-        addTiles() %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
         addCircleMarkers(lng = dsu$LOC_LONG, 
                          lat = dsu$LOC_LAT, 
                          label = dsu$label, 
