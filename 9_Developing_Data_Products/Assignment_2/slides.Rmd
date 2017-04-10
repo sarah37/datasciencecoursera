@@ -1,0 +1,30 @@
+---
+title: "Week 3 Assignment"
+author: "Sarah Schöttler"
+date: "10 April 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = F, warning = F)
+```
+
+## Introduction
+On the next slide, a simple plot of the number (in thousands) of Australian residents measured quarterly from March 1971 to March 1994 is shown. The data is taken from the austres dataset in the datasets package.
+
+## Code
+```{r echo=T}
+library(plotly)
+library(datasets)
+data(austres)
+
+p <- plot_ly(x = time(austres), 
+             y = austres, 
+             type = "scatter", 
+             mode="lines")
+```
+
+## Plot
+```{r}
+p
+```
