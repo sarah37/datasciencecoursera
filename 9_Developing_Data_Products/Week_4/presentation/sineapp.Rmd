@@ -1,0 +1,61 @@
+---
+title: "Sine Curve App"
+author: "Sarah Schöttler"
+date: "11 April 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = F, message = F)
+```
+
+## Concept
+
+This simple app shows a plot of a sine curve with two parameters a and b that can be adapted by the user using sliders. The app is aimed at students learning about functions and trigonometry. Adapting the parameters and directly seeing the effect will help them understand of what function parameters do.
+
+## Details
+The app is built in RStudio, using shiny and plotly.
+```{r eval=T, echo=F}
+library(plotly)
+```
+
+## Code
+
+The app outputs a graph based on the following code, where a and b can be modified by the user.
+```{r eval = FALSE, echo = T}
+x <- seq(from = -400, to = 400, length.out = 150)
+y <- a * sin(b * x * (180/pi))
+                
+plot_ly(x = x, 
+        y = y, 
+        type = "scatter", 
+        mode = "lines"
+        ) %>%
+        layout(xaxis = list(title = "x in degrees",
+                            dtick = 90),
+               yaxis = list(title = "a * sin(b * x)",
+                            range = c(-5,5))
+               )
+```
+
+## Example Plot
+Below, you can see a plot as the app outputs it, with a and b set to 1.
+
+```{r eval = T, echo = F}
+a <- 1
+b <- 1
+
+x <- seq(from = -400, to = 400, length.out = 150)
+y <- a * sin(b * x * (180/pi))
+                
+plot_ly(x = x, 
+        y = y, 
+        type = "scatter", 
+        mode = "lines"
+        ) %>%
+        layout(xaxis = list(title = "x in degrees",
+                            dtick = 90),
+               yaxis = list(title = "a * sin(b * x)",
+                            range = c(-5,5))
+               )
+```
